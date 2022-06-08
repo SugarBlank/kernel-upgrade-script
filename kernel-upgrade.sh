@@ -9,12 +9,14 @@ error() {
     exit 1
 }
 update-kernel() {
+	eselect kernel set 1
 	pushd /usr/src/linux > /dev/null 2>&1
 	[[ ! -e .config ]] && zcat /proc/config.gz > .config
 	
 	make -j$(getconf _NPROCESSORS_CONF) && make modules_install && make install
 	emerge --ask @module-rebuild
-	grub-mkconfig -o /boot/grub/grub.cfg
+	genkernel --kernel-config=/usr/src/linux/.config initramfs
+	eclean-kernel -n 3
 }
 prerun_checks
 update_kernel
