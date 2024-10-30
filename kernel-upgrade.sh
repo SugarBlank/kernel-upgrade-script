@@ -14,6 +14,7 @@ prerun_checks() {
 }
 
 update-kernel() {
+    eselect kernel list | tail -1 | awk '{print $2}' | sed 's/[][]//g'
     pushd /usr/src/linux > /dev/null 2>&1
     zcat /proc/config.gz > .config
     make -j$(getconf _NPROCESSORS_CONF) && make modules_install && make install
